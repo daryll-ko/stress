@@ -3,8 +3,8 @@
 
     interface Question {
         label: string;
-        value: number;
-        options: Any[];
+        value: number | string;
+        options: number[] | string[];
     }
 
 	const two: number[] = [1, 2];
@@ -31,17 +31,18 @@
         { label: "How many recognitions have you received in your life?", value: -1, options: ten },
         { label: "How many hours do you spend every day doing what you are passionate about?", value: -1, options: ten },
         { label: "In a typical week, how many times do you have the opportunity to think about yourself?", value: -1, options: ten },
-        { label: "Age groups", value: -1, options: ['Less than 20', '21 to 35', '36 to 50', '51 or more'] },
+        { label: "Age group", value: -1, options: ['20 or less', '21 to 35', '36 to 50', '51 or more'] },
         { label: "Gender", value: -1, options: ['Male', 'Female'] }
-    ];
+    ].map(question => ({...question, value: question.options[0]}));
 	
 
     let result: string | null = null;
+	export let form;
 
     function handleSubmit() {
         result = 'Processing...';
         setTimeout(() => {
-            result = Math.random() < 0.5 ? 'You are stressed...' : 'You are not stressed!';
+            result = form?.verdict === 1 ? 'You are stressed...' : 'You are not stressed!';
         }, 1000);
     }
 
@@ -62,11 +63,11 @@
     >
         {result ? result : 'Result here...'}
     </div>
-    <form class="flex flex-col gap-3 items-start bg-orange-100 p-3 rounded-lg w-[50%]" 
+    <form class="grid grid-cols-2 gap-3 items-start bg-orange-100 p-3 rounded-lg" 
 			on:submit|preventDefault={handleSubmit} 
 			method="POST" 
 			use:enhance = {enhanceOptions}>
-        {#each questions as question, index}
+        {#each questions as question}
             <div class="question">
                 {question.label}
                 <select bind:value={question.value} class="input" required>
@@ -78,7 +79,7 @@
         {/each}
         <button
             type="submit"
-            class="bg-orange-100 rounded-md px-3 py-2 border-2 border-solid border-orange-400 hover:scale-110 transition-all"
+            class="bg-orange-100 rounded-md px-3 py-2 border-2 border-solid border-orange-400 hover:bg-orange-400 hover:text-white transition-all"
         >Submit</button>
     </form>
 </div>
